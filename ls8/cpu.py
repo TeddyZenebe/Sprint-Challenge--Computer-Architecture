@@ -23,16 +23,16 @@ class CPU:
     ## detail on the module part
     def __init__(self):
         """Construct a new CPU."""
-        self.ram = [0] * 256  # 256 bytes of memory
-
+        # 256 bytes of memory
+        self.ram = [0] * 256  
+        #8 byte storage
         self.register = [0] * 8  
-
+        #program counter
         self.pc = 0  
-
+        # stack pointer
         self.sp = 7  
-
+        # flag
         self.flag = 0
-
         self.methods_hash = {
             LDI: self.LDI,
             PRN: self.PRN,
@@ -57,14 +57,9 @@ class CPU:
         self.ram[self.sp] = reg
         # Decrement SP
         self.sp -= 1
-        print("Self.pc 1: ", self.pc)
+        #print("Self.pc 1: ", self.pc)
         # Set PC to the address stored in the given register (which causes us to jump to that location in RAM)
-
-        self.pc = self.register[self.ram[self.pc + 1]]        
-        print("Self.pc: ", self.pc)
-        
-        print("Register: ", self.register)
-        # First instruction in the subroutine executes.
+        self.pc = self.register[self.ram[self.pc + 1]]    
         
     def RET(self):
         # Increment SP
@@ -75,13 +70,11 @@ class CPU:
         self.pc = val
 
     def PUSH(self):
-        '''
-        Runs `PUSH`. Stack begins at address F3 and grows downward. SP points at value at top of stack or at F4 if stack is empty. Registers R0-R6 get pushed onto the stack in that order.
-        '''
+        #Runs `PUSH`. Stack begins at address F3 and grows downward. SP points at value at top of stack or at F4 if stack is empty. 
+        #Registers R0-R6 get pushed onto the stack in that order.
         # Grab register from reg argument
         reg = self.ram[self.pc + 1]
         val = self.register[reg]
-
         # Decrement SP
         self.register[self.sp] -= 1
         # print("sp end in push: ", self.sp)
@@ -90,9 +83,7 @@ class CPU:
         self.pc += 2  # Comment out if using handle_pc function
 
     def POP(self):
-        '''
-        Runs `POP`. Registers R6-R0 are popped off the stack in that order.
-        '''
+        #Runs `POP`. Registers R6-R0 are popped off the stack in that order.
         #  Grabs the value from memory at the top of stack.
         reg = self.ram[self.pc + 1]
         val = self.ram[self.register[self.sp]]
@@ -105,62 +96,43 @@ class CPU:
         self.pc += 2  # comment out if using handle_pc function
 
     def LDI(self, operand_a, operand_b):
-        '''
-        Runs `LDI`, which sets the value of a register to an integer.
-        '''
+        #Runs `LDI`, which sets the value of a register to an integer.
         self.register[operand_a] = operand_b  # Store value (op b) in reg 0 (op a)
         self.pc += 3
 
     def PRN(self, operand_a):
-        '''
-        Prints numeric value (decimal integer)stored in the given register to console.
-        '''
-        print("PRN: ", self.register[operand_a])
+        #Prints numeric value (decimal integer)stored in the given register to console.
+        print(self.register[operand_a])
         self.pc += 2
 
     def HLT(self):
-        '''
-        Halts the CPU and exits the emulator.
-        '''
+        #Halts the CPU and exits the emulator.
         sys.exit()
 
     def JMP(self, operand_a):
-        '''
-        Jump to the address stored in the given register.
-        Set the PC to the address stored in the given register.
-        '''
+        #Jump to the address stored in the given register.Set the `PC` to the address stored in the given register.01010100
         self.pc = self.register[operand_a]  # Set pc to operand_a
     
     def JEQ(self, operand_a):
-        '''
-        If equal flag is set (true), jump to the address stored 
-        in the given register.
-        '''
+        #If `equal` flag is set (true), jump to the address stored in the given register.01010101
         if self.flag == 0b00000001:  # If equal flag
             self.JMP(operand_a)
         else: 
             self.pc += 2  # Increment pc by 2
 
     def JNE(self, operand_a):
-        '''
-        If E flag is clear (false, 0), jump to the address stored 
-        in the given register.
-        '''
+        #If `E` flag is clear (false, 0), jump to the address stored in the given register. 01010110
         if self.flag == 0b00000010 or self.flag == 0b00000100:  # If flag < or >, respectively
             self.JMP(operand_a)
         else:
             self.pc += 2
 
     def ram_read(self, MAR):
-        '''
-        Accepts the address to read and returns the value stored there.
-        '''
+        #Accepts the address to read and returns the value stored there.
         return self.ram[MAR]                  
 
     def ram_write(self, MAR, MDR):
-        '''
-        Accepts a value to write and the address to write it to.
-        '''
+        #Accepts a value to write and the address to write it to.
         self.ram[MAR] = MDR
 
     def load(self):
@@ -195,10 +167,10 @@ class CPU:
         elif op == SUB: 
             self.register[reg_a] -= self.register[reg_b]
             self.pc += 3
-        elif op == CMP:
+        elif op == CMP:#Compare the values in two registers
             # set L (less-than) flag set to 1 if registerA is less than registerB, zero otherwise. 
             if self.register[reg_a] < self.register[reg_b]:
-                self.flag = 0b00000010
+                self.flag = 0b00000010 
             
             # set G (greater-than) flag set to 1 if registerA is greater than registerB, zero otherwise. 
             elif self.register[reg_a] < self.register[reg_b]:
