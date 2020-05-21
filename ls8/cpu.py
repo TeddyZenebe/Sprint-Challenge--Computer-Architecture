@@ -216,16 +216,17 @@ class CPU:
             
             operand_a = self.ram_read(IR + 1)  # Get operand_a
             operand_b = self.ram_read(IR + 2)  # Get operand_b
-            
+            # make sure that when the methodes binary values shefted to the right satsified the else if 
             if op in self.methods_hash:
                 if op in [ADD, MUL, CMP]:
                     self.methods_hash[op](op, operand_a, operand_b)  # Invoke our methods_hash as a function w/ 2 operands
                 elif op >> 6 == 0:
-                    self.methods_hash[op]()  # Invoke our methods_hash as a function              
+                    #eg-> op==HLT which is 0b00000001 ==> 00000001>> 6 (sheft '0b00000001' to the right by 6 ) ==> 00000000=> this is equal to 0
+                    self.methods_hash[op]()  # Invoke our methods_hash as a function with no operanda//but push, pop and call has no operand however thier bitwise shift fall the other elif ---need rework           
                 elif op >> 6 == 1:
-                    self.methods_hash[op](operand_a)  
+                    self.methods_hash[op](operand_a)  # Invoke our methods_hash as a function with one opranda
                 elif op >> 6 == 2:
-                    self.methods_hash[op](operand_a, operand_b)  # Invoke our methods_hash as a function
+                    self.methods_hash[op](operand_a, operand_b)  # Invoke our methods_hash as a function with two opranda
             else:    
                 print(f"Unknown instruction.")
                 sys.exit(1)
